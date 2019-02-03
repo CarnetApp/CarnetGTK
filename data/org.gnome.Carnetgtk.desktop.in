@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=carnetgtk
+Exec=carnetgtk
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

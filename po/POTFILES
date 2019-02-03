@@ -1,0 +1,5 @@
+data/org.gnome.Carnetgtk.desktop.in
+data/org.gnome.Carnetgtk.appdata.xml.in
+data/org.gnome.Carnetgtk.gschema.xml
+src/window.uisrc/main.py
+src/window.py
