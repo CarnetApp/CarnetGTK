@@ -33,7 +33,6 @@ carnetgtk_sources = [
   'libs/html2text.py',
   'server/server.py',
   'server/settings_manager.py',
-  'server/notes/note_metadata.py',
   'server/notes/note_manager.py',
 ]
 

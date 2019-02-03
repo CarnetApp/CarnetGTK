@@ -1,5 +1,5 @@
 
-from .note_metadata import NoteMetadata
+
 from zipfile import ZipFile
 import re
 from .html2text import html2text

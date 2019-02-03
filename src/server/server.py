@@ -7,6 +7,8 @@ from pathlib import Path
 from .settings_manager import SettingsManager
 from .note_manager import NoteManager
 from urllib.parse import parse_qs
+import os, sys
+from stat import *
 import json
 #This class will handles any incoming request from
 #the browser
@@ -30,6 +32,22 @@ class myHandler(BaseHTTPRequestHandler):
                 text = file.read()
                 file.close()
                 data = bytes(text, "utf8")
+                self.send_response(200)
+                self.send_header('Content-type','application/json')
+            elif spath == "browser/list":
+                files = os.listdir(self.settingsManager.getNotePath()+"/"+params['path'][0])
+                ret = []
+                for name in files:
+                    print(name)
+                    s = os.stat(self.settingsManager.getNotePath()+"/"+params['path'][0]+"/"+name)
+                    file = {}
+                    file["name"] = name
+                    file["path"] = name
+                    file["isDir"] = S_ISDIR(s.st_mode)
+                    file["mtime"] = s.st_mtime
+                    ret.append(file)
+                print(json.dumps(ret))
+                data = str.encode(json.dumps(ret))
                 self.send_response(200)
                 self.send_header('Content-type','application/json')
             elif spath == "metadata":
