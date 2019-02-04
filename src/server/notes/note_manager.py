@@ -17,3 +17,25 @@ class NoteManager():
                 with zipnote.open('index.html') as index:
                     ret['shorttext'] = html2text(index.read().decode("utf-8")).strip()[0:150]
                     return ret
+    #returns html + metadata
+    def extractNote(self, to):
+        ret = {}
+        zip_ref = ZipFile(self.notePath, 'r')
+        zip_ref.extractall(to)
+        zip_ref.close()
+        try:
+            file = open(to+"/metadata.json", 'r')
+            text = file.read()
+            file.close()
+            ret['metadata'] = json.loads(text)
+        except FileNotFoundError:
+            ret['metadata'] = {}
+
+        try:
+            file = open(to+"/index.html", 'r')
+            text = file.read()
+            file.close()
+            ret['html'] = text
+        except FileNotFoundError:
+            ret['html'] = ""
+        return ret

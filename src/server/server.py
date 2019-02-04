@@ -8,6 +8,7 @@ from .recent_db_manager import RecentDBManager
 from .keyword_db_manager import KeywordDBManager
 from urllib.parse import parse_qs
 import os, sys
+import tempfile
 from stat import *
 import json
 #This class will handles any incoming request from
@@ -80,6 +81,14 @@ class myHandler(BaseHTTPRequestHandler):
                 data = bytes(keyword_db_manager.getMyKeywordDBString(), "utf8")
                 self.send_response(200)
                 self.send_header('Content-type','application/json')
+            elif spath == "note/open":
+                tmpNoteDir = self.getTmpNoteDir()
+                manager = NoteManager(self.settingsManager.getNotePath()+"/"+params['path'][0])
+                ret = manager.extractNote(tmpNoteDir)
+                ret['id'] = 0
+                data = str.encode(json.dumps(ret))
+                self.send_response(200)
+                self.send_header('Content-type','application/json')
             elif spath == "metadata":
                 ret = {}
                 for notePath in params['paths'][0].split(','):
@@ -117,6 +126,8 @@ class myHandler(BaseHTTPRequestHandler):
         # Send the html message
         self.wfile.write(data)
         return
+    def getTmpNoteDir(self):
+        return  tempfile.gettempdir()+"/CarnetGTK/Note";
 class Server():
     PORT_NUMBER = 8087
     def server_thread(z):
