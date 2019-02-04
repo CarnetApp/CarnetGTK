@@ -87,13 +87,18 @@ class myHandler(BaseHTTPRequestHandler):
                 self.send_response(404)
 
         else:
-            if(self.path == "/"):
+            if(spath == "/"):
                 file = open(self.APP_PATH+'/index.html', 'r')
                 text = file.read()
                 file.close()
                 data = str.encode(text.replace("!API_URL","api/"))
+            elif(spath == "/reader/reader.html"):
+                file = open(self.APP_PATH+"/reader/reader.html", 'r')
+                text = file.read()
+                file.close()
+                data = str.encode(text.replace("<!ROOTPATH>","/").replace("<!APIURL>","/api/"))
             else:
-                data = Path(self.APP_PATH+self.path).read_bytes()
+                data = Path(self.APP_PATH+spath).read_bytes()
             self.send_response(200)
         self.send_header('','')
         self.end_headers()
