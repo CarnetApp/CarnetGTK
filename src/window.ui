@@ -1,13 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="CarnetgtkWindow" parent="GtkApplicationWindow">
-    <property name="default-width">600</property>
-    <property name="default-height">300</property>
+    <property name="default-width">1100</property>
+    <property name="default-height">600</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">True</property>
         <property name="show-close-button">True</property>
-        <property name="title">Carnet</property>
+          <property name="title">Carnet</property>
+          <child>
+                <object class="GtkToggleButton" id="new-note">
+                  <property name="visible">True</property>
+                  <property name="sensitive">True</property>
+
+                  <style>
+                    <class name="image-button"/>
+                  </style>
+                  <child>
+                    <object class="GtkImage" id="add-icon">
+                      <property name="visible">True</property>
+                      <property name="icon-name">document-new</property>
+                      <property name="icon-size">1</property>
+                    </object>
+                  </child>
+                </object>
+                <packing>
+                  <property name="pack-type">end</property>
+                </packing>
+              </child>
+          <child>
+        <object class="GtkToggleButton" id="new-folder-note">
+          <property name="visible">True</property>
+          <property name="sensitive">True</property>
+
+          <style>
+            <class name="image-button"/>
+          </style>
+          <child>
+            <object class="GtkImage" id="add-folder-icon">
+              <property name="visible">True</property>
+              <property name="icon-name">folder-new</property>
+              <property name="icon-size">1</property>
+            </object>
+          </child>
+        </object>
+        <packing>
+          <property name="pack-type">end</property>
+        </packing>
+      </child>
+
          <child>
               <object class="GtkToggleButton" id="search">
                 <property name="visible">True</property>
