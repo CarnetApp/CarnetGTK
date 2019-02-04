@@ -60,7 +60,7 @@ class myHandler(BaseHTTPRequestHandler):
                     s = os.stat(self.settingsManager.getNotePath()+"/"+params['path'][0]+"/"+name)
                     file = {}
                     file["name"] = name
-                    file["path"] = name
+                    file["path"] = params['path'][0]+"/"+name
                     file["isDir"] = S_ISDIR(s.st_mode)
                     file["mtime"] = s.st_mtime
                     ret.append(file)
