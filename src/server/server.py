@@ -1,11 +1,11 @@
 import platform
-print("blaaa" + platform.python_version())
-
 from http.server import BaseHTTPRequestHandler,HTTPServer
 from threading import Thread
 from pathlib import Path
 from .settings_manager import SettingsManager
 from .note_manager import NoteManager
+from .recent_db_manager import RecentDBManager
+from .keyword_db_manager import KeywordDBManager
 from urllib.parse import parse_qs
 import os, sys
 from stat import *
@@ -66,6 +66,18 @@ class myHandler(BaseHTTPRequestHandler):
                     ret.append(file)
                 print(json.dumps(ret))
                 data = str.encode(json.dumps(ret))
+                self.send_response(200)
+                self.send_header('Content-type','application/json')
+            elif spath == "recentdb/merge":
+                recentDBManager = RecentDBManager()
+                recentDBManager.merge()
+                data = bytes(recentDBManager.getMyRecentDBString(), "utf8")
+                self.send_response(200)
+                self.send_header('Content-type','application/json')
+            elif spath == "keywordsdb/merge":
+                keyword_db_manager = KeywordDBManager()
+                keyword_db_manager.merge()
+                data = bytes(keyword_db_manager.getMyKeywordDBString(), "utf8")
                 self.send_response(200)
                 self.send_header('Content-type','application/json')
             elif spath == "metadata":
