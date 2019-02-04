@@ -73,8 +73,11 @@ class myHandler(BaseHTTPRequestHandler):
                 for notePath in params['paths'][0].split(','):
                     if(notePath == ""):
                         continue
-                    manager = NoteManager(self.settingsManager.getNotePath()+"/"+notePath)
-                    ret[notePath] = manager.getMetadata()
+                    try:
+                        manager = NoteManager(self.settingsManager.getNotePath()+"/"+notePath)
+                        ret[notePath] = manager.getMetadata()
+                    except FileNotFoundError:
+                        print("not found")
                 print(json.dumps(ret))
                 data = str.encode(json.dumps(ret))
                 self.send_response(200)
