@@ -34,6 +34,8 @@ carnetgtk_sources = [
   'server/server.py',
   'server/settings_manager.py',
   'server/notes/note_manager.py',
+  'server/databases/recent_db_manager.py',
+  'server/databases/keyword_db_manager.py',
 ]
 
 install_data(carnetgtk_sources, install_dir: moduledir)
