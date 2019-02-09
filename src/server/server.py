@@ -2,19 +2,20 @@ import platform
 from http.server import BaseHTTPRequestHandler,HTTPServer
 from threading import Thread
 from pathlib import Path
-from .settings_manager import SettingsManager
+from .settings_manager import *
 from .note_manager import NoteManager
 from .recent_db_manager import RecentDBManager
 from .keyword_db_manager import KeywordDBManager
 from urllib.parse import parse_qs
 import os, sys
 import tempfile
+import cgi
 from stat import *
 import json
 #This class will handles any incoming request from
 #the browser
 class myHandler(BaseHTTPRequestHandler):
-    settingsManager = SettingsManager()
+
     APP_PATH = "/home/phieelementary/Dev/GitBis/QuickDoc/CarnetNextcloud/templates/CarnetElectron"
 	#Handler for the GET requests
     def do_GET(self):
@@ -23,7 +24,6 @@ class myHandler(BaseHTTPRequestHandler):
             spath = self.path[0:index]
             params = parse_qs(self.path[index+1:])
         except ValueError:
-            print ("? not found")
             spath = self.path
         if(self.path.startswith("/api/")):
             spath = spath[len("/api/"):]
@@ -31,7 +31,7 @@ class myHandler(BaseHTTPRequestHandler):
             print(spath)
             if spath == "recentdb":
                 try:
-                    file = open(self.settingsManager.getNotePath()+"/quickdoc/recentdb/"+self.settingsManager.getUUID(), 'r')
+                    file = open(settingsManager.getNotePath()+"/quickdoc/recentdb/"+settingsManager.getUUID(), 'r')
                     text = file.read()
                     file.close()
                 except FileNotFoundError:
@@ -42,7 +42,7 @@ class myHandler(BaseHTTPRequestHandler):
             elif spath == "keywordsdb":
 
                 try:
-                    file = open(self.settingsManager.getNotePath()+"/quickdoc/keywords/"+self.settingsManager.getUUID(), 'r')
+                    file = open(settingsManager.getNotePath()+"/quickdoc/keywords/"+settingsManager.getUUID(), 'r')
                     text = file.read()
                     file.close()
                 except FileNotFoundError:
@@ -54,11 +54,11 @@ class myHandler(BaseHTTPRequestHandler):
                 data = bytes("/reader/reader.html", "utf8")
                 self.send_response(200)
             elif spath == "browser/list":
-                files = os.listdir(self.settingsManager.getNotePath()+"/"+params['path'][0])
+                files = os.listdir(settingsManager.getNotePath()+"/"+params['path'][0])
                 ret = []
                 for name in files:
                     print(name)
-                    s = os.stat(self.settingsManager.getNotePath()+"/"+params['path'][0]+"/"+name)
+                    s = os.stat(settingsManager.getNotePath()+"/"+params['path'][0]+"/"+name)
                     file = {}
                     file["name"] = name
                     file["path"] = params['path'][0]+"/"+name
@@ -83,10 +83,14 @@ class myHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type','application/json')
             elif spath == "note/open":
                 tmpNoteDir = self.getTmpNoteDir()
-                manager = NoteManager(self.settingsManager.getNotePath()+"/"+params['path'][0])
-                ret = manager.extractNote(tmpNoteDir)
+                currentManager = NoteManager(settingsManager.getNotePath()+"/"+params['path'][0])
+                ret = currentManager.extractNote(tmpNoteDir)
                 ret['id'] = 0
                 data = str.encode(json.dumps(ret))
+                self.send_response(200)
+                self.send_header('Content-type','application/json')
+            elif spath == "settings/editor_css":
+                data = str.encode("[\"/editor.css\"]")
                 self.send_response(200)
                 self.send_header('Content-type','application/json')
             elif spath == "metadata":
@@ -95,7 +99,7 @@ class myHandler(BaseHTTPRequestHandler):
                     if(notePath == ""):
                         continue
                     try:
-                        manager = NoteManager(self.settingsManager.getNotePath()+"/"+notePath)
+                        manager = NoteManager(settingsManager.getNotePath()+"/"+notePath)
                         ret[notePath] = manager.getMetadata()
                     except FileNotFoundError:
                         print("not found")
@@ -126,6 +130,36 @@ class myHandler(BaseHTTPRequestHandler):
         # Send the html message
         self.wfile.write(data)
         return
+
+    def do_POST(self):
+        try:
+            index = self.path.index("?")
+            spath = self.path[0:index]
+            params = parse_qs(self.path[index+1:])
+        except ValueError:
+            spath = self.path
+        if(self.path.startswith("/api/")):
+            spath = spath[len("/api/"):]
+            if spath == "note/saveText":
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD': 'POST'}
+                )
+                manager = NoteManager(settingsManager.getNotePath()+"/"+form.getvalue("path"))
+                print(form.getvalue("metadata"))
+                manager.saveTextAndMetadataToOpenedNote(form.getvalue("html"), form.getvalue("metadata"), self.getTmpNoteDir())
+
+                data = str.encode("")
+                self.send_response(200)
+        self.send_header('','')
+        self.end_headers()
+        # Send the html message
+        self.wfile.write(data)
+
+
+
+
     def getTmpNoteDir(self):
         return  tempfile.gettempdir()+"/CarnetGTK/Note";
 class Server():
