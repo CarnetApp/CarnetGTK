@@ -122,6 +122,10 @@ class myHandler(BaseHTTPRequestHandler):
                 text = file.read()
                 file.close()
                 data = str.encode(text.replace("<!ROOTPATH>","/").replace("<!APIURL>","/api/"))
+            elif(spath == "/editor.css"):
+                data = str.encode(".toolbar {\
+	                background: #"+settingsManager.getHeaderBarBG()+";\
+                }")
             else:
                 data = Path(self.APP_PATH+spath).read_bytes()
             self.send_response(200)

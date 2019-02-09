@@ -19,7 +19,7 @@ from gi.repository import Gtk, Gdk
 gi.require_version('WebKit2', '4.0')
 from gi.repository import WebKit2
 from .gi_composites import GtkTemplate
-
+from .settings_manager import *
 
 @GtkTemplate(ui='/org/gnome/Carnetgtk/window.ui')
 class CarnetgtkWindow(Gtk.ApplicationWindow):
@@ -32,12 +32,19 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
 
         WebKit2.WebView()
         self.init_template()
+        settingsManager.setHeaderBarBG(self.convert_to_hex(self.header_bar.get_style_context().get_background_color(Gtk.StateFlags.ACTIVE)))
         #self.webview.load_uri("file:///home/phieelementary/Dev/GitBis/QuickDoc/CarnetNextcloud/templates/CarnetElectron/index.html")
         self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
         self.webview.load_uri("http://localhost:8087")
         self.switch_to_browser()
+
         #self.webview.get_inspector().detach()
 
+    def convert_to_hex(self, rgba_color) :
+        red = int(rgba_color.red*255)
+        green = int(rgba_color.green*255)
+        blue = int(rgba_color.blue*255)
+        return '{r:02x}{g:02x}{b:02x}'.format(r=red,g=green,b=blue)
 
     def on_format_clicked(self, view):
         print("on format clicked")

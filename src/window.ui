@@ -9,7 +9,7 @@
         <property name="show-close-button">True</property>
           <property name="title">Carnet</property>
           <child>
-                <object class="GtkToggleButton" id="new-note">
+                <object class="GtkButton" id="new-note">
                   <property name="visible">True</property>
                   <property name="sensitive">True</property>
                   <property name="name">new-note</property>
@@ -29,7 +29,7 @@
                 </packing>
               </child>
           <child>
-        <object class="GtkToggleButton" id="new-folder-note">
+        <object class="GtkButton" id="new-folder-note">
           <property name="visible">True</property>
           <property name="sensitive">True</property>
           <property name="name">new-folder</property>
