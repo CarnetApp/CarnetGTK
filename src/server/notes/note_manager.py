@@ -13,9 +13,15 @@ class NoteManager():
 
     def getMetadata(self):
         with ZipFile(self.notePath) as zipnote:
-            with zipnote.open('metadata.json') as meta:
-                ret = {}
-                ret['metadata'] = json.loads(meta.read().decode("utf-8"))
+            try:
+                with zipnote.open('metadata.json') as meta:
+                    ret = {}
+                    ret['metadata'] = json.loads(meta.read().decode("utf-8"))
+                    with zipnote.open('index.html') as index:
+                        ret['shorttext'] = html2text(index.read().decode("utf-8")).strip()[0:150]
+                        return ret
+            except KeyError:
+                print ("no metadata")
                 with zipnote.open('index.html') as index:
                     ret['shorttext'] = html2text(index.read().decode("utf-8")).strip()[0:150]
                     return ret
@@ -32,8 +38,12 @@ class NoteManager():
         zip_ref = ZipFile(self.notePath+".tmp", 'w')
         self.zipdir(tmp_path, zip_ref)
         zip_ref.close()
-        os.remove(self.notePath)
+        try:
+            os.remove(self.notePath)
+        except FileNotFoundError:
+            print("not existing")
         os.rename(self.notePath+".tmp", self.notePath)
+        print("saved to "+self.notePath)
 
 
     def zipdir(self, path, ziph):
@@ -44,6 +54,12 @@ class NoteManager():
                 ziph.write(os.path.join(root, file), os.path.join(root[len(path):], file))
 
     def extractNote(self, to):
+        import shutil
+        try:
+            shutil.rmtree(to)
+        except FileNotFoundError:
+            print ("not found")
+        os.makedirs(to)
         self.lastExtractedDest = to
         ret = {}
         zip_ref = ZipFile(self.notePath, 'r')

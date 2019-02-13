@@ -13,6 +13,7 @@
                   <property name="visible">True</property>
                   <property name="sensitive">True</property>
                   <property name="name">new-note</property>
+                 <signal name="clicked" handler="on_create_note_clicked" swapped="no"/>
                   <style>
                     <class name="image-button"/>
                   </style>

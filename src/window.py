@@ -46,6 +46,10 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
         blue = int(rgba_color.blue*255)
         return '{r:02x}{g:02x}{b:02x}'.format(r=red,g=green,b=blue)
 
+    def on_create_note_clicked(self, view):
+        print("on create note clicked")
+        self.webview.run_javascript("$(document.getElementById(\"add-note-button\")).click()")
+
     def on_format_clicked(self, view):
         print("on format clicked")
         self.toggle_toolbar("format-toolbar")

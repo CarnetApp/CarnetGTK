@@ -53,6 +53,33 @@ class myHandler(BaseHTTPRequestHandler):
             elif spath == "note/open/prepare":
                 data = bytes("/reader/reader.html", "utf8")
                 self.send_response(200)
+            elif spath == "note/create":
+                import random
+                import string
+                i=0
+                try:
+                    path = params['path'][0]
+                except KeyError:
+                    path = ""
+                files = os.listdir(settingsManager.getNotePath()+"/"+path)
+                ret = []
+                basename = ""
+                found = False
+                while(not found):
+                    basename = "untitled"
+                    if(i>0):
+                        basename = basename + " " + str(i)
+                    print("current name "+basename)
+                    for name in files:
+                        found = True
+                        if(name.startswith(basename)):
+                            found = False
+                            break
+                    i = i+1
+                basename = basename + ''.join(random.choice(string.ascii_uppercase) for x in range(2))+".sqd"
+                data = bytes(path+"/"+basename, "utf8")
+                self.send_response(200)
+                print ("selected "+basename)
             elif spath == "browser/list":
                 files = os.listdir(settingsManager.getNotePath()+"/"+params['path'][0])
                 ret = []
@@ -84,7 +111,11 @@ class myHandler(BaseHTTPRequestHandler):
             elif spath == "note/open":
                 tmpNoteDir = self.getTmpNoteDir()
                 currentManager = NoteManager(settingsManager.getNotePath()+"/"+params['path'][0])
-                ret = currentManager.extractNote(tmpNoteDir)
+                try:
+                    ret = currentManager.extractNote(tmpNoteDir)
+                except FileNotFoundError:
+                    print ("not existing")
+                    ret = {}
                 ret['id'] = 0
                 data = str.encode(json.dumps(ret))
                 self.send_response(200)
