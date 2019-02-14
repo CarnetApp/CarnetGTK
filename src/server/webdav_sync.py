@@ -60,71 +60,22 @@ class Sync():
         });
         return True;
 
-Sync.prototype.startSync = function (onDirOK) {
-    var sync = this;
-    this.isFullSync = onDirOK == undefined;
-    if (onDirOK == undefined)
-        onDirOK = function () {
-            sync.onDirOK()
-        }
-    this.hasDownloadedSmt = false
-    if (sync.settingsHelper.getRemoteWebdavAddr() == undefined || sync.settingsHelper.getRemoteWebdavAddr() == null) {
-        this.exit();
-        return false;
-    }
-    if (this.isSyncing) {
-        console.logDebug("is syncing")
-        return false;
-    }
-    this.isSyncing = true;
-    this.onSyncStart();
-    this.connect();
-    var sync = this;
-    this.nextcloudRoot = sync.settingsHelper.getRemoteWebdavPath()
-    console.logDebug(this.nextcloudRoot)
-
-    var dbStr = this.store.get("nextcloud_db", "{}");
-    this.db = JSON.parse(dbStr);
-    this.remoteFiles = {}
-    this.remoteFilesStack = []
-
-    this.remoteFoldersToVisit = [];
-    this.localFoldersToVisit = [];
-    this.localFiles = [];
-    this.localDirToRm = []
-    this.remoteDirToRm = []
-    this.toUpload = [];
-    this.filesToStat = []
-    this.toDownload = [];
-    this.toFix = [];
-    this.toDeleteLocal = [];
-    this.toDeleteRemote = [];
-    this.client.createDirectory(this.nextcloudRoot).then(function () {
-        onDirOK();
-    }).catch(function (err) {
-        console.logDebug(err);
-        onDirOK();
-    });
-    return true;
+    def correctPath (nextcloudRoot, path):
+        if (path.startswith(nextcloudRoot)):
+            path = path.substr(nextcloudRoot.length)
+        if (path.startswith("/" + nextcloudRoot)):
+            path = path.substr(nextcloudRoot.length + 1)
+        if (path.startswith("/")):
+            path = path.substr(1)
+        return path
 
 
-}
-def correctPath (nextcloudRoot, path):
-    if (path.startswith(nextcloudRoot)):
-        path = path.substr(nextcloudRoot.length)
-    if (path.startswith("/" + nextcloudRoot)):
-        path = path.substr(nextcloudRoot.length + 1)
-    if (path.startswith("/")):
-        path = path.substr(1)
-    return path
-
-
-def correctLocalPath (localRoot, path):
-    if (path.startswith(localRoot)):
-        path = path.substr(localRoot.length):
-    if (path.startswith("/")):
-        path = path.substr(1)
-    return path;
+    def correct_local_path (localRoot, path):
+        if (path.startswith(localRoot)):
+            path = path.substr(localRoot.length):
+        if (path.startswith("/")):
+            path = path.substr(1)
+        return path;
 
 
     def on_dir_ok(self):
@@ -189,13 +140,16 @@ Sync.prototype.uploadAndSave = function (local_db_item, callback) {
 }
 
 
-    def save(self, local, remote) {
+    def save(self, local, remote):
         local.remotelastmod = remote.remotelastmod
         self.db[local.path] = local
+        self.saveDB()
+
+
+    def saveDB(self):
         file = open('db.json', 'w')
         file.write(json.dumps(self.db))
         file.close()
-    }
 
     def download_and_save(self, remote_db_item, callback) {
         print("downloading " + remote_db_item.path)
@@ -242,103 +196,29 @@ Sync.prototype.uploadAndSave = function (local_db_item, callback) {
             callback()
         else:
             print("delete " + settingsHelper.getNotePath() + "/" + local.path)
-            this.fs.unlink(this.settingsHelper.getNotePath() + "/" + local.path, function (err) {
-                if (err) {
-                    sync.exit()
-                    return
-                }
-                console.logDebug("err " + err)
-                delete sync.db[local.path];
-                sync.store.set("nextcloud_db", JSON.stringify(sync.db));
-                callback()
-            })
-        }
-}
+            os.remove(this.settingsHelper.getNotePath() + "/" + local.path)
+            del self.db[local.path];
+            self.saveDB()
 
-    def handleRemoteItems(self, remote_db_Item, callback):
+
+    def handle_remote_items(self, remote_db_Item, callback):
         if (remote_db_item == None):
             callback()
             return
-        print("handleRemoteItems")
+        print("handle_remote_items")
         def cb ():
-             self.handleRemoteItems(self.remote_files_stack.shift(), callback)
+             self.handle_remote_items(self.remote_files_stack.pop(0), callback)
 
         in_db_item = sync.db[remote_db_item.path];
         if (in_db_item === None):
             #download
-            self.downloadAndSave(remote_db_item, cb)
+            self.download_and_save(remote_db_item, cb)
         else:
             if (in_db_item.remotelastmod === remote_db_Item.remotelastmod):
                 #delete remote
                 self.delete_remote_and_save(remote_db_item, cb)
             else:
                 self.download_and_save(remote_db_item, cb)
-
-
-
-"""
- Error not reported: file doesn't exist.
- """
-Sync.prototype.syncOneItem = function (localRelativePath, callback) {
-    if (this.isSyncing) {
-        console.log("is syncing, delaying")
-        this.syncNext.push({ path: localRelativePath, callback: callback })
-        return;
-    }
-    console.log("sync one item " + localRelativePath)
-
-    var sync = this;
-    sync.startSync(function () {
-        sync.fs.stat(sync.path.join(sync.settingsHelper.getNotePath(), localRelativePath), (err, stat) => {
-            var local_db_item = undefined;
-            if (err) {
-                console.logDebug(err)
-                if (err.errno !== -2) { // not existing
-                    sync.exit()
-                    callback(true)
-                }
-            }
-            else
-                local_db_item = DBItem.fromFS(sync.settingsHelper.getNotePath(), localRelativePath, stat);
-            sync.client
-                .stat(sync.nextcloudRoot + "/" + localRelativePath)
-                .then(function (stat) {
-                    var item = DBItem.fromNC(sync.nextcloudRoot, stat)
-                    sync.remoteFiles[item.path] = item;
-                    console.logDebug("file stat " + stat)
-                    if (local_db_item != undefined) {
-                        sync.remoteFilesStack.push(item)
-                        sync.handleLocalItems(local_db_item, function () {
-                            console.logDebug("end")
-                            sync.exit()
-                            callback(false)
-                        })
-                    }
-                    else
-                        sync.handleRemoteItems(item, function () {
-                            console.logDebug("end")
-                            sync.exit()
-                            callback(false)
-                        })
-                }).catch(function (err) {
-                    console.logDebug(err.status);
-                    if (err.status == 404 && local_db_item != undefined) {
-                        sync.handleLocalItems(local_db_item, function () {
-                            console.logDebug("end")
-                            sync.exit()
-                            callback(false)
-                        })
-                    }
-                    else {
-                        sync.exit();
-                        callback(false)
-                    }
-                });
-        })
-
-    })
-
-}
 
     def deleteRemoteAndSave(self, remote, callback) {
         print("delete remote " + remote.path)
@@ -354,69 +234,69 @@ Sync.prototype.syncOneItem = function (localRelativePath, callback) {
 
 
     def handle_local_items(self, local_db_item, callback):
-    if (local_db_item == None):
-        callback()
-        return False
-    in_db_item = self.db[local_db_item.path];
-    print(local_db_item.path)
-    var sync = this;
-    var inDBItem = sync.db[local_db_item.path];
-    var remote_db_item = self.remote_files[local_db_item.path];
-    if (remote_db_item != None):
-        del self.remote_files_stack[self.remote_files_stack.indexof(remote_db_item), 1];
-    def cb1():
-        self.handle_local_items(sync.localFiles.pop(0), callback)
+        if (local_db_item == None):
+            callback()
+            return False
+        in_db_item = self.db[local_db_item.path];
+        print(local_db_item.path)
+        var sync = this;
+        var inDBItem = sync.db[local_db_item.path];
+        var remote_db_item = self.remote_files[local_db_item.path];
+        if (remote_db_item != None):
+            del self.remote_files_stack[self.remote_files_stack.indexof(remote_db_item), 1];
+        def cb1():
+            self.handle_local_items(sync.localFiles.pop(0), callback)
 
-    cb = cb1
-    if (in_db_item == None): #has never been synced
-        if (remote_db_item == None): #is not on server
-            #upload  and save
-            print("not on server")
-            self.upload_and_save(local_db_item, cb)
-        else: #is on server
-            if (remote_db_item.remotelastmod !== local_db_item.locallastmod):
-                #conflict
-                if (local_db_item.type !== "directory"):
-                    print("conflict on " + local_db_item.path)
-                    self.fix_conflict(local_db_item, remote_db_item, cb)
-                else:
-                    cb()
-
-            else:
-                #that's ok !
-                print("OK 1 ")
-                self.save(local_db_item, remote_db_item, cb)
-    else: #has already been synced
-        if (remote_db_item == None): #is not on server
-            if (local_db_item.locallastmod === inDBItem.locallastmod): # was already sent
-                #delete local...
-                self.delete_local_and_save(local_db_item, cb)
-            else:
-                #upload
-                print("not up to date on server")
+        cb = cb1
+        if (in_db_item == None): #has never been synced
+            if (remote_db_item == None): #is not on server
+                #upload  and save
+                print("not on server")
                 self.upload_and_save(local_db_item, cb)
-        else: #is on server
-            if (remote_db_item.remotelastmod === inDBItem.remotelastmod):
-                if (local_db_item.locallastmod === inDBItem.locallastmod):
-                    print("nothing to do !")
-                    cb();
+            else: #is on server
+                if (remote_db_item.remotelastmod !== local_db_item.locallastmod):
+                    #conflict
+                    if (local_db_item.type !== "directory"):
+                        print("conflict on " + local_db_item.path)
+                        self.fix_conflict(local_db_item, remote_db_item, cb)
+                    else:
+                        cb()
+
+                else:
+                    #that's ok !
+                    print("OK 1 ")
+                    self.save(local_db_item, remote_db_item, cb)
+        else: #has already been synced
+            if (remote_db_item == None): #is not on server
+                if (local_db_item.locallastmod === inDBItem.locallastmod): # was already sent
+                    #delete local...
+                    self.delete_local_and_save(local_db_item, cb)
                 else:
                     #upload
-                    if (inDBItem.type !== "directory"):
-                        sync.upload_and_save(local_db_item, cb)
+                    print("not up to date on server")
+                    self.upload_and_save(local_db_item, cb)
+            else: #is on server
+                if (remote_db_item.remotelastmod === inDBItem.remotelastmod):
+                    if (local_db_item.locallastmod === inDBItem.locallastmod):
+                        print("nothing to do !")
+                        cb();
+                    else:
+                        #upload
+                        if (inDBItem.type !== "directory"):
+                            sync.upload_and_save(local_db_item, cb)
+                        else cb()
+                else if (local_db_item.locallastmod === inDBItem.locallastmod):
+                    #download
+                    if (local_db_item.type !== "directory"):
+                        self.download_and_save(remote_db_item, cb)
                     else cb()
-            else if (local_db_item.locallastmod === inDBItem.locallastmod):
-                #download
-                if (local_db_item.type !== "directory"):
-                    self.download_and_save(remote_db_item, cb)
-                else cb()
-            else:
-                #conflict
+                else:
+                    #conflict
 
-                if (local_db_item.type !== "directory"):
-                    print("conflict on " + local_db_item.path)
-                    self.fix_conflict(local_db_item, remote_db_item, cb)
-                else cb()
+                    if (local_db_item.type !== "directory"):
+                        print("conflict on " + local_db_item.path)
+                        self.fix_conflict(local_db_item, remote_db_item, cb)
+                    else cb()
 
 
     def fix_conflict(self, local_db_item, remote_db_item, callback):
@@ -437,58 +317,12 @@ Sync.prototype.syncOneItem = function (localRelativePath, callback) {
             os.rename(fpath,local_db_item.path)
             sync.save(local_db_item, remote_db_item)
             callback()
-
-Sync.prototype.visitlocal = function (path, callback) {
-    var sync = this
-    this.fs.readdir(path, (err, files) => {
-        if (err) {
-            sync.exit()
-            return
-        }
-        for (let file of files) {
-            const fpath = this.path.join(path, file);
-
-            sync.filesToStat.push(fpath);
-
-            //console.logDebug(stat.mtimeMs / 1000)
-        }
-        if (sync.localFoldersToVisit.length !== 0) {
-            setTimeout(function () {
-                sync.visitlocal(sync.localFoldersToVisit.pop(), callback)
-
-            }, 200)
-        } else if (sync.filesToStat.length !== 0)
-            sync.statFiles(sync.filesToStat.pop(), callback)
-        else callback()
-    })
-
-}
-
-Sync.prototype.statFiles = function (fpath, callback) {
-    console.logDebug("stating " + fpath)
-    var sync = this;
-    this.fs.stat(fpath, (err, stat) => {
-        if (err) {
-            sync.exit()
-            return;
-        }
-        var local_db_item = DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat);
-        sync.localFiles.push(local_db_item);
-        if (local_db_item.type == "directory")
-            sync.localFoldersToVisit.push(fpath)
-        if (sync.filesToStat.length !== 0) {
-            setTimeout(function () {
-                sync.statFiles(sync.filesToStat.pop(), callback)
-            }, 10)
-        } else if (sync.localFoldersToVisit.length !== 0) {
-            setTimeout(function () {
-                sync.visitlocal(sync.localFoldersToVisit.pop(), callback)
-
-            }, 100)
-        } else callback()
-    })
-
-}
+    def visit_local(self, path, callback):
+        for root, dirs, files in os.walk(path, topdown=False):
+           for name in files:
+              self.local_files.append(DBFile.from_fs(Sync.correct_local_path(settingsManager.getNotePath(),os.path.join(root, name)), os.stat(os.path.join(root, name)))
+           for name in dirs:
+              self.local_files.append(DBFile.from_fs(Sync.correct_local_path(settingsManager.getNotePath(),os.path.join(root, name)), os.stat(os.path.join(root, name)))
 
 
 Sync.prototype.visitRemote = function (path, callback) {
@@ -518,16 +352,16 @@ Sync.prototype.visitRemote = function (path, callback) {
         });
 }
 
-var DBItem = function (path, locallastmod, remotelastmod, type) {
-    this.path = path;
-    this.locallastmod = locallastmod;
-    this.remotelastmod = remotelastmod;
-    this.type = type;
-}
-DBItem.fromNC = function (ncroot, ncItem) {
-    return new DBItem(correctPath(ncroot, ncItem.filename), undefined, new Date(ncItem.lastmod).getTime() / 1000, ncItem.type);
-}
-DBItem.fromFS = function (localroot, path, stat) {
-    return new DBItem(correctLocalPath(localroot, path), stat.mtimeMs != undefined ? stat.mtimeMs / 1000 : new Date(stat.mtime).getTime() / 1000, undefined, stat.isFile() ? "file" : "directory");
-}
-exports.Sync = Sync
+
+class DBItem():
+    def __init__(self, path, locallastmod, remotelastmod, type):
+        self.path = path
+        self.locallastmod = locallastmod
+        self.remotelastmod = remotelastmod
+        self.type=type
+
+    def from_nc(ncroot, ncitem):
+        return DBItem()
+
+    def from_fs(path, stat):
+        return DBItem(path, stat.st_mtime, S_ISDIR(stat.st_mode) ? "file" : "directory"
