@@ -70,8 +70,9 @@ class myHandler(BaseHTTPRequestHandler):
                     if(i>0):
                         basename = basename + " " + str(i)
                     print("current name "+basename)
+                    found = True
                     for name in files:
-                        found = True
+
                         if(name.startswith(basename)):
                             found = False
                             break
@@ -138,9 +139,19 @@ class myHandler(BaseHTTPRequestHandler):
                 data = str.encode(json.dumps(ret))
                 self.send_response(200)
                 self.send_header('Content-type','application/json')
+            elif spath == "settings/lang/json":
+                lang = params['lang'][0]
+                file = open(self.APP_PATH+"/i18n/"+lang+".json", 'r')
+                text = file.read()
+                file.close()
+                data = str.encode(text)
+                self.send_response(200)
+                self.send_header('Content-type','application/json')
+                print(text)
             else:
                 data = str.encode("notyetimplemented")
                 self.send_response(404)
+
 
         else:
             if(spath == "/"):
