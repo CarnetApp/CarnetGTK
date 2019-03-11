@@ -17,6 +17,6 @@ Build instructions will soon be available.
 ## Screenshots
 
 
-<img src="screenshots/overview.png" width="400" />
+<img src="screenshots/overview.png" width="600" />
 
-<img src="screenshots/editor.png" width="400" />
+<img src="screenshots/editor.png" width="600" />
