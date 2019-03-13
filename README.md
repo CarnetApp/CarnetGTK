@@ -19,7 +19,7 @@ Build instructions will soon be available.
 
 2. Integrating some ui element in gnome environment. Make use of CSD Gnome headerbar (done) + adapt webview css to color of the theme (on its way)
 
-3. First carnet view should be only GTK, no HTML
+3. First Carnet window should be only GTK, no HTML
 
 
 
