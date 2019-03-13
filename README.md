@@ -17,9 +17,11 @@ Build instructions will soon be available.
 
 1. Implementing all backend API to get rid of the electron version on linux and having a fully working version of Carnet inside GTK webkit
 
-2. Integrating some ui element in gnome environment. Make use of CSD Gnome headerbar (done) + adapt webview css to color of the theme (on its way)
+2. Webdav (therefore Nextcloud) synchronisation 
 
-3. First Carnet window should be only GTK, no HTML
+3. Integrating some ui element in gnome environment. Make use of CSD Gnome headerbar (done) + adapt webview css to color of the theme (on its way)
+
+4. First Carnet window should be only GTK, no HTML
 
 
 
