@@ -30,13 +30,8 @@ class myHandler(BaseHTTPRequestHandler):
 
             print(spath)
             if spath == "recentdb":
-                try:
-                    file = open(settingsManager.getNotePath()+"/quickdoc/recentdb/"+settingsManager.getUUID(), 'r')
-                    text = file.read()
-                    file.close()
-                except FileNotFoundError:
-                    text = "{\"data\":[]}"
-                data = bytes(text, "utf8")
+                recentDBManager = RecentDBManager()
+                data = bytes(recentDBManager.getMyRecentDBString(), "utf8")
                 self.send_response(200)
                 self.send_header('Content-type','application/json')
             elif spath == "keywordsdb":
@@ -186,7 +181,18 @@ class myHandler(BaseHTTPRequestHandler):
             spath = self.path
         if(self.path.startswith("/api/")):
             spath = spath[len("/api/"):]
-            if spath == "note/saveText":
+            print("post "+spath)
+            if spath == "recentdb/action":
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD': 'POST'}
+                )
+                recentDBManager = RecentDBManager()
+                recentDBManager.addActionsToMyDB(json.loads(form.getvalue("data")))
+                data = bytes(recentDBManager.getMyRecentDBString(), "utf8")
+
+            elif spath == "note/saveText":
                 form = cgi.FieldStorage(
                     fp=self.rfile,
                     headers=self.headers,

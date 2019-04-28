@@ -1,4 +1,5 @@
 import json
+import os
 class SettingsManager:
 
     def __init__(self):
@@ -32,8 +33,8 @@ class SettingsManager:
 
     def getNotePath(self):
         path = self.getSetting("note_path")
-        if(path == None):
-            path = "/home/phieelementary/Doggfgcuments/debug"
+        if(path == None or True):
+            path = os.path.expanduser("Carnet")
             self.setSetting("note_path",path)
         return path
     def getUUID(self):

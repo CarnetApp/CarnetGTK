@@ -71,3 +71,12 @@ class RecentDBManager():
 
     def getRecentDBFile(self, id, mode):
         return open(self.settingsManager.getNotePath()+"/quickdoc/recentdb/"+id, mode, encoding='utf8')
+
+    def  addActionsToMyDB(self, actions):
+        recent = self.getMyRecentDB();
+
+        for item in actions:
+            recent["data"].append(item)
+        self.writeMyDB(recent)
+
+        
