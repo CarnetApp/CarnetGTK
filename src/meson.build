@@ -30,6 +30,7 @@ carnetgtk_sources = [
   'gi_composites.py',
   'main.py',
   'window.py',
+  'note_widget.py',
   'libs/html2text.py',
   'server/server.py',
   'server/settings_manager.py',

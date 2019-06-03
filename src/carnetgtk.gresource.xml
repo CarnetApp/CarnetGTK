@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/org/gnome/Carnetgtk">
     <file>window.ui</file>
+        <file>note_widget.ui</file>
   </gresource>
 </gresources>
