@@ -41,7 +41,7 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
 
 
         # some space between the columns of the grid
-        self.note_container.set_column_spacing(20)
+
 
 
 
@@ -53,25 +53,31 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
             css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-
+        width = int(self.get_size().width/4)
         column_rows = [0,0,0,0]
+        columns = list()
+        for i in range(0,4):
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+
+            columns.append(box)
+            self.note_container.pack_start(box, True, True, 10)
         row = 0
         column = 0
         from random import randint
-        width = int(self.get_size().width/4)
-        while( row != 1000):
+
+        while( row != 20):
             text = ""
             for i in range(0,randint(0, 100)):
-                text = text+"bla "
-            notear = {"shorttext":text, "title":"title"}
+                text = text+"pet "
+            notear = {"shorttext":text, "title":"title "+str(row)}
             note = NoteWidget(notear)
-            note.set_size_request(width, -1)
+
             note.show_all()
-            note.set_size_request(width, -1)
+
             note.modify_bg(Gtk.StateFlags.NORMAL, Gdk.color_parse('white'))
+
+            columns[column].pack_start(note, False, False, 0)
             height = note.size_request().height
-            print(height)
-            self.note_container.attach(note, column, column_rows[column], 1, height)
             column_rows[column] = column_rows[column]+height
             row = row+1
 

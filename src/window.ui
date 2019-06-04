@@ -183,13 +183,17 @@
         <property name="hscrollbar_policy">never</property>
         <property name="shadow_type">in</property>
         <child>
-        <object class="GtkGrid" id="note_container">
-          <property name="visible">True</property>
-          <property name="column_homogeneous">True</property>
-          <property name="column_spacing">10</property>
-              <property name="margin_left">11</property>
-      <property name="margin_right">10</property>
-        </object>
+          <object class="GtkBox" id="note_container">
+            <property name="can_focus">False</property>
+            <property name="valign">start</property>
+            <property name="margin_left">11</property>
+            <property name="margin_right">10</property>
+            <property name="margin_top">11</property>
+            <property name="margin_bottom">11</property>
+            <property name="orientation">horizontal</property>
+          </object>
+
+
       </child>
       </object>
     </child>
