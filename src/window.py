@@ -21,6 +21,7 @@ from gi.repository import WebKit2
 from .gi_composites import GtkTemplate
 from .settings_manager import *
 from .note_widget import *
+from .adaptive_grid import *
 @GtkTemplate(ui='/org/gnome/Carnetgtk/window.ui')
 class CarnetgtkWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'CarnetgtkWindow'
@@ -53,36 +54,21 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
             css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-        width = int(self.get_size().width/4)
-        column_rows = [0,0,0,0]
-        columns = list()
-        for i in range(0,4):
-            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-            columns.append(box)
-            self.note_container.pack_start(box, True, True, 10)
-        row = 0
-        column = 0
         from random import randint
-
-        while( row != 20):
+        row = 0
+        while( row != 100):
             text = ""
             for i in range(0,randint(0, 100)):
                 text = text+"pet "
             notear = {"shorttext":text, "title":"title "+str(row)}
             note = NoteWidget(notear)
-
             note.show_all()
-
             note.modify_bg(Gtk.StateFlags.NORMAL, Gdk.color_parse('white'))
-
-            columns[column].pack_start(note, False, False, 0)
-            height = note.size_request().height
-            column_rows[column] = column_rows[column]+height
+            self.note_container.add_child(note)
             row = row+1
 
 
-            column = column_rows.index(min(column_rows))
 
 
         self.note_container.show_all()
