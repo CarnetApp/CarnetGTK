@@ -24,9 +24,13 @@ from .settings_manager import *
 @GtkTemplate(ui='/org/gnome/Carnetgtk/note_widget.ui')
 class NoteWidget(Gtk.Box):
     __gtype_name__ = 'NoteWidget'
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    title_label = GtkTemplate.Child()
+    text_label = GtkTemplate.Child()
+    def __init__(self, note):
+        super().__init__()
         self.init_template()
         self.get_style_context().add_class("note")
+        self.text_label.set_text(note["shorttext"])
+        self.text_label.set_line_wrap(True)
+        self.title_label.set_text(note['title'])
 

@@ -54,20 +54,30 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-
+        column_rows = [0,0,0,0]
         row = 0
         column = 0
-        while( row != 10000):
-            note = NoteWidget()
+        from random import randint
+        width = int(self.get_size().width/4)
+        while( row != 1000):
+            text = ""
+            for i in range(0,randint(0, 100)):
+                text = text+"bla "
+            notear = {"shorttext":text, "title":"title"}
+            note = NoteWidget(notear)
+            note.set_size_request(width, -1)
             note.show_all()
+            note.set_size_request(width, -1)
             note.modify_bg(Gtk.StateFlags.NORMAL, Gdk.color_parse('white'))
             height = note.size_request().height
-            self.note_container.attach(note, column, row, 1, 1)
-            if(column == 3):
-                column = 0
-                row = row+50
-            else:
-                column = column + 1
+            print(height)
+            self.note_container.attach(note, column, column_rows[column], 1, height)
+            column_rows[column] = column_rows[column]+height
+            row = row+1
+
+
+            column = column_rows.index(min(column_rows))
+
 
         self.note_container.show_all()
         settingsManager.setHeaderBarBG(self.convert_to_hex(self.header_bar.get_style_context().get_background_color(Gtk.StateFlags.ACTIVE)))
