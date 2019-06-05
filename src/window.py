@@ -20,8 +20,9 @@ gi.require_version('WebKit2', '4.0')
 from gi.repository import WebKit2
 from .gi_composites import GtkTemplate
 from .settings_manager import *
-from .note_widget import *
 from .adaptive_grid import *
+from .recent_db_manager import RecentDBManager
+from .recent_note_list import RecentNoteList
 @GtkTemplate(ui='/org/gnome/Carnetgtk/window.ui')
 class CarnetgtkWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'CarnetgtkWindow'
@@ -29,6 +30,7 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
     #webview = GtkTemplate.Child()
     header_bar = GtkTemplate.Child()
     note_container = GtkTemplate.Child()
+    scroll = GtkTemplate.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -47,7 +49,7 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
 
 
         css_provider = Gtk.CssProvider.get_default()
-        css_provider.load_from_data(b""".note{    border-radius: 5px;border:solid 1px #e0f0ff;}""")
+        css_provider.load_from_data(b""".note{border-radius: 5px;border:solid 1px #e0f0ff;}""")
 
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
@@ -55,34 +57,18 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-        from random import randint
-        row = 0
-        while( row != 100):
-            text = ""
-            for i in range(0,randint(0, 100)):
-                text = text+"pet "
-            notear = {"shorttext":text, "title":"title "+str(row)}
-            note = NoteWidget(notear)
-            note.show_all()
-            note.modify_bg(Gtk.StateFlags.NORMAL, Gdk.color_parse('white'))
-            self.note_container.add_child(note)
-            row = row+1
 
 
 
-
-        self.note_container.show_all()
         settingsManager.setHeaderBarBG(self.convert_to_hex(self.header_bar.get_style_context().get_background_color(Gtk.StateFlags.ACTIVE)))
         #self.webview.load_uri("file:///home/phieelementary/Dev/GitBis/QuickDoc/CarnetNextcloud/templates/CarnetElectron/index.html")
         #self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
         #self.webview.load_uri("http://localhost:8087")
         self.switch_to_browser()
-
+        RecentNoteList(self.note_container, self.scroll)
         #self.webview.get_inspector().detach()
         #self.note_container.insert_row(1)
         #self.note_container.insert_column(1)
-
-
 
     def convert_to_hex(self, rgba_color) :
         red = int(rgba_color.red*255)

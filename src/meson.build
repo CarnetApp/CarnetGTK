@@ -31,6 +31,8 @@ carnetgtk_sources = [
   'main.py',
   'window.py',
   'ui/adaptive_grid.py',
+  'ui/recent_note_list.py',
+  'ui/note_list.py',
   'note_widget.py',
   'libs/html2text.py',
   'server/server.py',

@@ -22,7 +22,7 @@ class AdaptiveGrid(Gtk.Box):
     __gtype_name__ = 'AdaptiveGrid'
     children = list()
     def __init__(self):
-        super()
+        super().__init__()
         self.set_columns_count(4)
 
     def set_columns_count(self, count):

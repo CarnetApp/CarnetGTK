@@ -50,6 +50,43 @@ class RecentDBManager():
     def getMyRecentDB(self):
          return json.loads(self.getMyRecentDBString())
 
+    def getMyRecentDBNotes(self):
+        flaten = []
+        pin = []
+        for item in self.getMyRecentDB()['data']:
+            try:
+                index = flaten.index(item['path'])
+            except ValueError:
+                index = -1
+            try:
+                indexPin = pin.index(item['path'])
+            except ValueError:
+                indexPin = -1
+            if (item["action"] == "add"):
+                if (index > -1):
+                    del flaten[index]
+                flaten.append(item['path'])
+            elif (item['action'] == "remove"):
+                if (index > -1):
+                    del flaten[index]
+                if (indexPin > -1):
+                    del pin[indexPin]
+            elif (item['action'] == "move"):
+                if (index > -1):
+                    flaten[index] = item['newPath']
+                if (indexPin > -1):
+                    pin[indexPin] = item['newPath']
+            elif (item['action'] == "pin"):
+                if (indexPin > -1):
+                    del pin[indexPin]
+                pin.append(item.path)
+            elif (item['action'] == "unpin"):
+                if (indexPin > -1):
+                    del pin[indexPin]
+        flaten.reverse()
+        pin.reverse()
+        pin.extend(flaten)
+        return pin
     def getMyRecentDBString(self):
 
         return self.getRecentDBString(self.settingsManager.getUUID())
