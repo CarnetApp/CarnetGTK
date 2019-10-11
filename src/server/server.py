@@ -78,7 +78,8 @@ class myHandler(BaseHTTPRequestHandler):
                 print ("selected "+basename)
             elif spath == "browser/list":
                 files = os.listdir(settingsManager.getNotePath()+"/"+params['path'][0])
-                ret = []
+                ret = {}
+                ret['files'] = []
                 for name in files:
                     print(name)
                     s = os.stat(settingsManager.getNotePath()+"/"+params['path'][0]+"/"+name)
@@ -87,7 +88,7 @@ class myHandler(BaseHTTPRequestHandler):
                     file["path"] = params['path'][0]+"/"+name
                     file["isDir"] = S_ISDIR(s.st_mode)
                     file["mtime"] = s.st_mtime
-                    ret.append(file)
+                    ret['files'].append(file)
                 print(json.dumps(ret))
                 data = str.encode(json.dumps(ret))
                 self.send_response(200)
