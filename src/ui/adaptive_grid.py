@@ -23,9 +23,17 @@ class AdaptiveGrid(Gtk.Box):
     children = list()
     def __init__(self):
         super().__init__()
-        self.set_columns_count(4)
+        self.current  = 0
+        self.children = list()
+        self.columns = list()
+        self.set_columns_count(3)
 
     def set_columns_count(self, count):
+        for column in self.columns:
+            for child in column.get_children():
+                print("removing child")
+                column.remove(child)
+            self.remove(column)
         self.column_rows = list()
         self.columns = list()
 
@@ -34,9 +42,23 @@ class AdaptiveGrid(Gtk.Box):
             self.column_rows.append(0)
             self.columns.append(box)
             self.pack_start(box, True, True, 10)
-
-
+        for child in self.children:
+            print("adding child back")
+            self.internal_add_child(child)
+    def onResized(self):
+        newColumnCount = int(self.get_allocation().width/250)
+        if(newColumnCount < 1):
+            newColumnCount = 1
+        if(self.current != newColumnCount):
+            self.current = newColumnCount
+            self.set_columns_count(self.current)
+            self.show_all()
+        self.queue_draw()
     def add_child(self, child):
+        self.children.append(child)
+        self.internal_add_child(child)
+
+    def internal_add_child(self, child):
 
         column = self.column_rows.index(min(self.column_rows))
         self.columns[column].pack_start(child, False, False, 0)
