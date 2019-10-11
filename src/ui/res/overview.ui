@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <template class="Overview" parent="GtkBox">
+    <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">horizontal</property>
+        <child>
+          <object class="GtkBox" id="sidebarBox">
+          <property name="visible">True</property>
+          <property name="width_request">240</property>
+          <property name="can_focus">False</property>
+          <property name="orientation">vertical</property>
+          <child>
+            <object class="GtkScrolledWindow" id="sidebarScolledWin">
+              <property name="width_request">50</property>
+
+              <property name="visible">True</property>
+              <property name="can_focus">True</property>
+              <property name="hscrollbar_policy">never</property>
+              <child>
+                <object class="GtkListBox" id="list">
+                  <property name="visible">True</property>
+                  <property name="can_focus">False</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="name">title-label</property>
+                      <property name="visible">True</property>
+                      <property name="can_focus">False</property>
+                      <property name="label">Recent</property>
+                      <property name="margin_top">11</property>
+                      <property name="margin_bottom">11</property>
+                    </object>
+                    <packing>
+                      <property name="position">1</property>
+                    </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="name">title-label</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label">Browser</property>
+                        <property name="margin_top">11</property>
+                        <property name="margin_bottom">11</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="name">title-label</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label">Settings</property>
+                        <property name="margin_top">11</property>
+                        <property name="margin_bottom">11</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+               </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object  class="GtkStack" id="main_view">
+          <property name="visible">True</property>
+          <child>
+          <object class="GtkScrolledWindow" id="scroll">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="AdaptiveGrid" id="note_container">
+                <property name="can_focus">False</property>
+                <property name="valign">start</property>
+                <property name="margin_left">11</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">11</property>
+                <property name="margin_bottom">11</property>
+                <property name="orientation">horizontal</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </template>
+</interface>

@@ -21,32 +21,25 @@ from gi.repository import WebKit2
 from .gi_composites import GtkTemplate
 from .settings_manager import *
 from .adaptive_grid import *
+from .overview import *
+from .overview_toolbar import *
+from .editor_toolbar import *
 from .recent_db_manager import RecentDBManager
 from .recent_note_list import RecentNoteList
-@GtkTemplate(ui='/org/gnome/Carnetgtk/window.ui')
+@GtkTemplate(ui='/org/gnome/Carnetgtk/ui/res/window.ui')
 class CarnetgtkWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'CarnetgtkWindow'
 
-    #webview = GtkTemplate.Child()
-    header_bar = GtkTemplate.Child()
-    note_container = GtkTemplate.Child()
-    scroll = GtkTemplate.Child()
 
+    overview = GtkTemplate.Child()
+    editor_toolbar = GtkTemplate.Child()
+    overview_toolbar = GtkTemplate.Child()
+    main_view = GtkTemplate.Child()
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         #WebKit2.WebView()
         self.init_template()
-
-
-
-        # a grid
-
-
-        # some space between the columns of the grid
-
-
-
 
         css_provider = Gtk.CssProvider.get_default()
         css_provider.load_from_data(b""".note{border-radius: 5px;border:solid 1px #e0f0ff;}""")
@@ -59,45 +52,34 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
 
 
 
-
-        settingsManager.setHeaderBarBG(self.convert_to_hex(self.header_bar.get_style_context().get_background_color(Gtk.StateFlags.ACTIVE)))
         #self.webview.load_uri("file:///home/phieelementary/Dev/GitBis/QuickDoc/CarnetNextcloud/templates/CarnetElectron/index.html")
+        #self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
+        #self.webview.load_uri("http://localhost:8087")
+        self.connect('check-resize', self.resized)
+        self.overview_toolbar.set_window(self)
+        self.overview.set_window(self)
+        #self.webview.get_inspector().detach()
+        #self.note_container.insert_row(1)
+        #self.note_container.insert_column(1)
+        self.editor_toolbar.hide()
+    def resized(self, window):
+
+        self.overview.onResized()
+
+    def convert_to_hex(self, rgba_color) :
+        red = int(rgba_color.red*255)
+        green = int(rgba_color.green*255)#self.webview.load_uri("file:///home/phieelementary/Dev/GitBis/QuickDoc/CarnetNextcloud/templates/CarnetElectron/index.html")
         #self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
         #self.webview.load_uri("http://localhost:8087")
         self.switch_to_browser()
         RecentNoteList(self.note_container, self.scroll)
         #self.webview.get_inspector().detach()
-        #self.note_container.insert_row(1)
-        #self.note_container.insert_column(1)
-
-    def convert_to_hex(self, rgba_color) :
-        red = int(rgba_color.red*255)
-        green = int(rgba_color.green*255)
         blue = int(rgba_color.blue*255)
         return '{r:02x}{g:02x}{b:02x}'.format(r=red,g=green,b=blue)
 
-    def on_create_note_clicked(self, view):
-        print("on create note clicked")
-        self.webview.run_javascript("$(document.getElementById(\"add-note-button\")).click()")
-
-    def on_format_clicked(self, view):
-        print("on format clicked")
-        self.toggle_toolbar("format-toolbar")
-
-    def on_edit_clicked(self, view):
-        print("on format clicked")
-        self.toggle_toolbar("edit-toolbar")
-
-    def on_media_clicked(self, view):
-        print("on format clicked")
-        self.toggle_toolbar("media-toolbar")
-
-    def on_tools_clicked(self, view):
-        print("on format clicked")
-        self.toggle_toolbar("tools-toolbar")
 
     def toggle_toolbar(self, toolbar):
-        self.webview.run_javascript("writerFrame.contentWindow.writer.toolbarManager.toggleToolbar(writerFrame.contentWindow.document.getElementById('"+toolbar+"'))")
+        self.webview.run_javascript("writer.toolbarManager.toggleToolbar(writerFrame.contentWindow.document.getElementById('"+toolbar+"'))")
 
     def window_title_change(self, v, param):
         print("on title changed")
@@ -107,21 +89,33 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
             message = v.get_title().split(":::",1)[1]
             # Now, send a message back to JavaScript
             if(message == "noteloaded"):
-                self.switch_to_editor()
+                print('loaded')
             elif(message == "exit"):
                 self.switch_to_browser()
 
-    def switch_to_editor(self):
-        for child in self.header_bar.get_children():
-            if(child.get_name() == "new-note"):
-                child.hide()
-            elif(child.get_name() == "new-folder"):
-                child.hide()
-        for child in self.header_bar.get_custom_title().get_children():
-            if(child.get_name() == "title-label"):
-                child.hide()
-            elif(child.get_name() == "editor-box"):
-                child.show()
+    def switch_to_editor(self, path):
+        if(not hasattr(self, "webview")):
+            self.webview = WebKit2.WebView()
+            self.webview.load_uri("http://localhost:8089/reader/reader.html?path="+path)
+            self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
+            self.main_view.add(self.webview)
+            self.main_view.show_all()
+
+        self.overview.hide()
+        self.overview_toolbar.hide()
+        self.webview.show()
+        self.editor_toolbar.show()
+        self.webview.get_inspector().detach()
+        #for child in self.header_bar.get_children():
+        #    if(child.get_name() == "new-note"):
+        #        child.hide()
+        #    elif(child.get_name() == "new-folder"):
+        #        child.hide()
+        #for child in self.header_bar.get_custom_title().get_children():
+        #    if(child.get_name() == "title-label"):
+        #        child.hide()
+        #    elif(child.get_name() == "editor-box"):
+        #        child.show()
     def switch_to_browser(self):
         for child in self.header_bar.get_children():
             if(child.get_name() == "new-note"):

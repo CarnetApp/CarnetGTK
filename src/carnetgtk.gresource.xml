@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/gnome/Carnetgtk">
-    <file>window.ui</file>
-        <file>note_widget.ui</file>
+    <file>ui/res/window.ui</file>
+    <file>ui/res/overview.ui</file>
+    <file>ui/res/overview_toolbar.ui</file>
+    <file>ui/res/editor_toolbar.ui</file>
+    <file>note_widget.ui</file>
   </gresource>
 </gresources>
