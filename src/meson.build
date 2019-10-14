@@ -32,6 +32,7 @@ carnetgtk_sources = [
   'window.py',
   'ui/adaptive_grid.py',
   'ui/recent_note_list.py',
+  'ui/browser_note_list.py',
   'ui/note_list.py',
   'ui/overview.py',
   'ui/overview_toolbar.py',

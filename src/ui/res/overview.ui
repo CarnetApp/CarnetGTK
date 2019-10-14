@@ -2,11 +2,182 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <requires lib="libhandy" version="0.0"/>
   <template class="Overview" parent="GtkBox">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
+
+      <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="orientation">horizontal</property>
+        <property name="orientation">vertical</property>
         <child>
+          <object class="GtkStack" id="stack">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkStack" id="main_view">
+                <property name="visible">True</property>
+                <child>
+                  <object class="AdaptiveGrid" id="note_container">
+
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">11</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">11</property>
+                    <property name="margin_bottom">11</property>
+                  </object>
+                </child>
+                <signal name="draw" handler="on_widget_show"/>
+              </object>
+              <packing>
+                <property name="name">page1</property>
+                <property name="title" translatable="yes">Latest</property>
+                <property name="icon_name">preferences-system-time-symbolic</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkStack" id="browser_view">
+                <property name="visible">True</property>
+                <signal name="draw" handler="on_widget_show"/>
+              </object>
+              <packing>
+                <property name="name">page2</property>
+                <property name="title" translatable="yes">Browser</property>
+                <property name="icon_name">inode-directory-symbolic</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkStack" id="keywords_view">
+                <property name="visible">True</property>
+                <signal name="draw" handler="on_widget_show"/>
+              </object>
+              <packing>
+                <property name="name">page3</property>
+                <property name="title" translatable="yes">Keywords</property>
+                <property name="icon_name">user-bookmarks-symbolic</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <signal name="set-focus-child" handler="on_widget_show"/>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="HdyViewSwitcherBar" id="switcher_bar">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="stack">stack</property>
+            <property name="reveal">True</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="header_bar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="show_close_button">True</property>
+        <property name="title">Carnet</property>
+        <child type="title">
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">horizontal</property>
+            <property name="hexpand">True</property>
+            <child>
+              <object class="GtkToggleButton" id="search">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="receives_default">False</property>
+                <child>
+                  <object class="GtkImage" id="search-icon">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">edit-find-symbolic</property>
+                    <property name="icon_size">1</property>
+                  </object>
+                </child>
+                <style>
+                  <class name="image-button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="pack_type">start</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="HdySqueezer" id="squeezer">
+                <property name="visible">True</property>
+                <property name="hexpand">True</property>
+                <property name="transition-type">crossfade</property>
+                <child>
+                  <object class="HdyViewSwitcher" id="title_wide_switcher">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="policy">wide</property>
+                    <property name="margin_left">200</property>
+                    <property name="stack">stack</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="HdyViewSwitcher" id="title_narrow_switcher">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="policy">narrow</property>
+                    <property name="stack">stack</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="title_label">
+                    <property name="visible">True</property>
+                    <property name="halign">center</property>
+                    <property name="label"/>
+                    <style>
+                      <class name="title"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="OverviewToolbar" id="overview_toolbar">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <!--<child>
+     <object class="HdyLeaflet" >
+      <property name="visible">True</property>
+      <property name="can_focus">False</property>
+       <property name="hhomogeneous-folded">False</property>
+       <property name="hhomogeneous-unfolded">True</property>
+      <property name="visible_child">main_view</property>
+      <property name="mode_transition_type">slide</property>
+      <property name="child_transition_type">slide</property>
+      <property name="interpolate_size">True</property>
+        <child>
+
           <object class="GtkBox" id="sidebarBox">
           <property name="visible">True</property>
           <property name="width_request">240</property>
@@ -23,9 +194,12 @@
                 <object class="GtkListBox" id="list">
                   <property name="visible">True</property>
                   <property name="can_focus">False</property>
+                  show
+
+                  <signal name="row-activated" handler="on_row_activated" swapped="no"/>
                   <child>
                     <object class="GtkLabel">
-                      <property name="name">title-label</property>
+                      <property name="name">recent</property>
                       <property name="visible">True</property>
                       <property name="can_focus">False</property>
                       <property name="label">Recent</property>
@@ -38,12 +212,13 @@
                     </child>
                     <child>
                       <object class="GtkLabel">
-                        <property name="name">title-label</property>
+                        <property name="name">browser</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">Browser</property>
                         <property name="margin_top">11</property>
                         <property name="margin_bottom">11</property>
+
                       </object>
                       <packing>
                         <property name="position">1</property>
@@ -74,33 +249,20 @@
           </object>
         </child>
         <child>
-          <object  class="GtkStack" id="main_view">
-          <property name="visible">True</property>
-          <child>
-          <object class="GtkScrolledWindow" id="scroll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">never</property>
-            <property name="shadow_type">in</property>
-            <child>
-              <object class="AdaptiveGrid" id="note_container">
-                <property name="can_focus">False</property>
-                <property name="valign">start</property>
-                <property name="margin_left">11</property>
-                <property name="margin_right">10</property>
-                <property name="margin_top">11</property>
-                <property name="margin_bottom">11</property>
-                <property name="orientation">horizontal</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
+
       <packing>
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="position">1</property>
       </packing>
     </child>
+     </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>-->
   </template>
 </interface>
+

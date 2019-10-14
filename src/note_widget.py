@@ -30,7 +30,10 @@ class NoteWidget(Gtk.EventBox):
         super().__init__()
         self.init_template()
         self.note = note
-        self.get_style_context().add_class("note")
+        self.get_style_context().add_class("note2")
+        if(str(note["metadata"]["color"]) != "None"):
+            self.get_style_context().add_class("note_"+note["metadata"]["color"])
+
         self.text_label.set_text(note["shorttext"])
         self.text_label.set_line_wrap(True)
         self.title_label.set_text(path.basename(note['path']))

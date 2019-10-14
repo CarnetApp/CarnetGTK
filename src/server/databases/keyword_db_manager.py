@@ -71,3 +71,4 @@ class KeywordDBManager():
 
     def getKeywordDBFile(self, id, mode):
         return open(self.settingsManager.getNotePath()+"/quickdoc/keywords/"+id, mode, encoding='utf8')
+

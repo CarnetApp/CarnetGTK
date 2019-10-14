@@ -23,16 +23,16 @@ from .recent_note_list import RecentNoteList
 @GtkTemplate(ui='/org/gnome/Carnetgtk/ui/res/editor_toolbar.ui')
 class EditorToolbar(Gtk.Box):
     __gtype_name__ = 'EditorToolbar'
-
+    separator = GtkTemplate.Child()
     def __init__(self):
         super().__init__()
         self.init_template()
 
 
 
-    def on_format_clicked(self, view):
+    def on_back_clicked(self, view):
         print("on format clicked")
-        self.toggle_toolbar("format-toolbar")
+        self.window.switch_to_browser()
 
     def on_edit_clicked(self, view):
         print("on format clicked")
@@ -45,3 +45,12 @@ class EditorToolbar(Gtk.Box):
     def on_tools_clicked(self, view):
         print("on format clicked")
         self.toggle_toolbar("tools-toolbar")
+
+    def set_window(self, window):
+        self.window = window
+    def on_resize(self, window_width):
+        if(window_width<952):
+            self.separator.hide()
+        else:
+            self.separator.show()
+        

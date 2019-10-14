@@ -11,5 +11,8 @@ class RecentNoteList(NoteList):
 
     def get_objects(self):
         recentDBManager = RecentDBManager()
+        recentDBManager.merge()
+        recentDBManager = RecentDBManager()
         return recentDBManager.getMyRecentDBNotes()
+
 

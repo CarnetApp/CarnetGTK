@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <template class="OverviewToolbar" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="orientation">horizontal</property>
-
-
-
-
-
-
+    <property name="homogeneous">False</property>
+    <property name="baseline_position">top</property>
     <child>
       <object class="GtkButton" id="new-note">
         <property name="name">new-note</property>
@@ -23,7 +18,6 @@
           <object class="GtkLabel" id="add-icon">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <!--<property name="icon_name">document-new</property>-->
             <property name="label">New note</property>
           </object>
         </child>
@@ -32,7 +26,8 @@
         </style>
       </object>
       <packing>
-        <property name="pack_type">e</property>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
         <property name="position">2</property>
       </packing>
     </child>
@@ -55,33 +50,9 @@
         </style>
       </object>
       <packing>
-        <property name="pack_type">start</property>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
         <property name="position">3</property>
-      </packing>
-    </child>
-
-
-    <child>
-      <object class="GtkToggleButton" id="search">
-        <property name="visible">True</property>
-        <property name="sensitive">False</property>
-        <property name="can_focus">False</property>
-        <property name="receives_default">False</property>
-        <child>
-          <object class="GtkImage" id="search-icon">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="icon_name">edit-find-symbolic</property>
-            <property name="icon_size">1</property>
-          </object>
-        </child>
-        <style>
-          <class name="image-button"/>
-        </style>
-      </object>
-      <packing>
-        <property name="pack_type">start</property>
-        <property name="position">4</property>
       </packing>
     </child>
   </template>

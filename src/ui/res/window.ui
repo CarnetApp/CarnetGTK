@@ -6,11 +6,11 @@
     <property name="can_focus">False</property>
     <property name="default_width">1100</property>
     <property name="default_height">700</property>
-    <child type="titlebar">
-      <object class="GtkHeaderBar" id="header_bar">
+   <child type="titlebar">
+      <object class="HdyHeaderBar" id="header_bar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="title">Carnet</property>
+        <property name="title"></property>
         <property name="show_close_button">True</property>
 
      <child type="title">
@@ -23,7 +23,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">center</property>
-            <property name="label">Carnet</property>
+            <property name="label"></property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -37,20 +37,22 @@
           <property name="position">1</property>
         </packing>
     </child>
-        <child>
-          <object class="OverviewToolbar" id="overview_toolbar">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-        </child>
+
         <child>
           <object class="EditorToolbar" id="editor_toolbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+
           </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
       </object>
     </child>
+
     <child>
       <object  class="GtkStack" id="main_view">
         <property name="visible">True</property>
@@ -58,7 +60,11 @@
           <object class="Overview" id="overview">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+              <style>
+              <class name="background"/>
+            </style>
           </object>
+
           <packing>
             <property name="pack_type">end</property>
             <property name="expand">True</property>

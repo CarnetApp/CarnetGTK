@@ -12,22 +12,24 @@ class NoteList:
         row = 0
         while( row != len(self.objects)):
             path = self.objects[row]
-            s = os.stat(settingsManager.getNotePath()+"/"+path)
-            if(S_ISDIR(s.st_mode)):
-                row = row + 1
-                continue
+            try:
+                s = os.stat(settingsManager.getNotePath()+"/"+path)
+                if(S_ISDIR(s.st_mode)):
+                    row = row + 1
+                    continue
+            except Exception:
+                print("bla")
             noteManager = NoteManager(settingsManager.getNotePath()+"/"+path)
             note = noteManager.getMetadata()
             note['path'] = path
             note_widget = NoteWidget(note)
             note_widget.show_all()
-            note_widget.modify_bg(Gtk.StateFlags.NORMAL, Gdk.color_parse('white'))
             note_widget.connect("button-release-event", self.on_note_clicked)
             self.container.add_child(note_widget)
             row = row+1
 
 
-        self.scrollview.get_vadjustment().connect("value-changed",self.onChanged)
+       # self.scrollview.get_vadjustment().connect("value-changed",self.onChanged)
         self.container.show_all()
 
     def set_window(self, window):

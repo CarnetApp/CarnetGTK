@@ -18,9 +18,9 @@
         "cflags" : "-O2 -g",
         "cxxflags" : "-O2 -g",
         "env" : {
-            "V" : "1",
-            "WEBKIT_INSPECTOR_SERVER" : "/usr/bin/gdbserver localhost:8082",
-            "GTK_DEBUG" : "interactive"
+            "GTK_DEBUG" : "interactive",
+            "WEBKIT_INSPECTOR_SERVER" : "127.0.0.1:1234",
+            "V" : "1"
         }
     },
     "cleanup" : [

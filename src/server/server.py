@@ -173,6 +173,7 @@ class myHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
         return
 
+
     def do_POST(self):
         try:
             index = self.path.index("?")
@@ -216,7 +217,7 @@ class myHandler(BaseHTTPRequestHandler):
     def getTmpNoteDir(self):
         return  tempfile.gettempdir()+"/CarnetGTK/Note";
 class Server():
-    PORT_NUMBER = 8087
+    PORT_NUMBER = 8098
     def server_thread(z):
         try:
 	        #Create a web server and define the handler to manage the

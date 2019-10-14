@@ -32,8 +32,9 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
 
 
     overview = GtkTemplate.Child()
+    header_bar = GtkTemplate.Child()
     editor_toolbar = GtkTemplate.Child()
-    overview_toolbar = GtkTemplate.Child()
+    #overview_toolbar = GtkTemplate.Child()
     main_view = GtkTemplate.Child()
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -42,7 +43,53 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
         self.init_template()
 
         css_provider = Gtk.CssProvider.get_default()
-        css_provider.load_from_data(b""".note{border-radius: 5px;border:solid 1px #e0f0ff;}""")
+        css_provider.load_from_data(b""".note2
+        {
+        border-radius: 5px;
+
+        }
+        .note_none{
+                background:white;
+        }
+       .note_red{
+            background: rgb(241, 166, 166);
+        }
+        .note_orange{
+            background: rgb(241, 195, 165);
+        }
+        .note_yellow{
+            background: rgb(255, 230, 157);
+        }
+
+        .note_green{
+            background: rgb(174, 243, 190);
+        }
+        .note_teal{
+            background: rgb(108, 247, 240);
+        }
+        .note_blue{
+            background: rgb(122, 167, 201);
+            box-shadow:none;
+        }
+        .note_violet{
+            background: rgb(155, 135, 199);
+            box-shadow:none;
+        }
+        .note_purple{
+            background: rgb(178, 137, 192);
+        }
+        .note_pink{
+            background: rgb(207, 157, 185);
+        }
+
+        /*.note-title{
+           color:white;
+        }
+
+        .note-text{
+           color:white;
+        }*/
+""")
 
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
@@ -50,20 +97,20 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-
+        self.set_titlebar(self.overview.header_bar)
 
         #self.webview.load_uri("file:///home/phieelementary/Dev/GitBis/QuickDoc/CarnetNextcloud/templates/CarnetElectron/index.html")
         #self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
         #self.webview.load_uri("http://localhost:8087")
         self.connect('check-resize', self.resized)
-        self.overview_toolbar.set_window(self)
+        self.editor_toolbar.set_window(self)
         self.overview.set_window(self)
         #self.webview.get_inspector().detach()
         #self.note_container.insert_row(1)
         #self.note_container.insert_column(1)
-        self.editor_toolbar.hide()
+        #self.editor_toolbar.hide()
     def resized(self, window):
-
+        self.editor_toolbar.on_resize(self.get_allocation().width)
         self.overview.onResized()
 
     def convert_to_hex(self, rgba_color) :
@@ -94,17 +141,20 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
                 self.switch_to_browser()
 
     def switch_to_editor(self, path):
+
         if(not hasattr(self, "webview")):
             self.webview = WebKit2.WebView()
-            self.webview.load_uri("http://localhost:8089/reader/reader.html?path="+path)
+            self.webview.load_uri("http://localhost:8099/reader/reader.html?path="+path)
             self.webview.connect("notify::title", self.window_title_change) #only way to receive messages...
             self.main_view.add(self.webview)
             self.main_view.show_all()
+        else:
+            self.webview.run_javascript("loadPath(\""+path+"\")")
 
         self.overview.hide()
-        self.overview_toolbar.hide()
+        self.set_titlebar(self.header_bar)
         self.webview.show()
-        self.editor_toolbar.show()
+
         self.webview.get_inspector().detach()
         #for child in self.header_bar.get_children():
         #    if(child.get_name() == "new-note"):
@@ -117,14 +167,7 @@ class CarnetgtkWindow(Gtk.ApplicationWindow):
         #    elif(child.get_name() == "editor-box"):
         #        child.show()
     def switch_to_browser(self):
-        for child in self.header_bar.get_children():
-            if(child.get_name() == "new-note"):
-                child.show()
-            elif(child.get_name() == "new-folder"):
-                child.show()
-        for child in self.header_bar.get_custom_title().get_children():
-            if(child.get_name() == "title-label"):
-                child.show()
-            elif(child.get_name() == "editor-box"):
-                child.hide()
+        self.set_titlebar(self.overview.header_bar)
+        self.overview.show()
+        self.webview.hide()
 
