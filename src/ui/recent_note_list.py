@@ -1,6 +1,9 @@
 
 from .recent_db_manager import RecentDBManager
 from .note_list import NoteList
+import os, sys
+from stat import *
+from .settings_manager import *
 class RecentNoteList(NoteList):
 
     def __init__(self, container, scrollview):

@@ -9,6 +9,9 @@
         "--share=ipc",
         "--socket=x11",
         "--socket=wayland",
+         "--filesystem=home",
+        "--filesystem=host",
+
         "--filesystem=xdg-run/dconf",
         "--filesystem=~/.config/dconf:ro",
         "--talk-name=ca.desrt.dconf",
