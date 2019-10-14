@@ -38,6 +38,25 @@
         "*.a"
     ],
     "modules" : [
+    	{
+            "name" : "libhandy",
+            "buildsystem" : "meson",
+            "config-opts": [
+                "-Dtests=false",
+                "-Dexamples=false",
+                "-Dgtk_doc=false",
+                "-Dvapi=false",
+                "-Dglade_catalog=disabled"
+            ],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "tag" : "v0.0.11",
+                    "url" : "https://source.puri.sm/Librem5/libhandy.git"
+                }
+            ]
+        },
+
         {
             "name" : "carnetgtk",
             "buildsystem" : "meson",
