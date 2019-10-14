@@ -18,22 +18,34 @@ import gi
 from gi.repository import Gtk, Gdk
 
 
-class AdaptiveGrid(Gtk.Box):
+class AdaptiveGrid(Gtk.ScrolledWindow):
     __gtype_name__ = 'AdaptiveGrid'
     children = list()
     def __init__(self):
         super().__init__()
+        self.gtk_box = Gtk.Box()
+        self.gtk_box.set_homogeneous(True)
+        self.add_with_viewport(self.gtk_box)
         self.current  = 0
         self.children = list()
         self.columns = list()
-        self.set_columns_count(3)
 
-    def set_columns_count(self, count):
+        self.column_rows = None
+
+    def reset(self):
+        self.internal_reset()
+        self.children = list()
+        self.current = -1
+        self.onResized()
+
+    def internal_reset(self):
         for column in self.columns:
             for child in column.get_children():
                 print("removing child")
                 column.remove(child)
-            self.remove(column)
+            self.gtk_box.remove(column)
+    def set_columns_count(self, count):
+        self.internal_reset()
         self.column_rows = list()
         self.columns = list()
 
@@ -41,22 +53,28 @@ class AdaptiveGrid(Gtk.Box):
             box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             self.column_rows.append(0)
             self.columns.append(box)
-            self.pack_start(box, True, True, 10)
+
+            self.gtk_box.pack_start(box, True, True, 5)
         for child in self.children:
             print("adding child back")
             self.internal_add_child(child)
     def onResized(self):
         newColumnCount = int(self.get_allocation().width/250)
-        if(newColumnCount < 1):
-            newColumnCount = 1
+        if(newColumnCount < 2):
+            newColumnCount = 2
+
         if(self.current != newColumnCount):
             self.current = newColumnCount
             self.set_columns_count(self.current)
             self.show_all()
+        #for column in  self.columns:
+         #   column.set_size_request(self.get_allocation().width/ newColumnCount -20, 0)
+
         self.queue_draw()
     def add_child(self, child):
         self.children.append(child)
-        self.internal_add_child(child)
+        if(self.column_rows != None): #wait for first resize
+            self.internal_add_child(child)
 
     def internal_add_child(self, child):
 
